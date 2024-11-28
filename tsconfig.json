@@ -6,7 +6,6 @@
     "module": "ESNext",
     "moduleDetection": "force",
     "jsx": "react-jsx",
-    "jsxImportSource": "@/react",
     "allowJs": true,
 
     // Bundler mode

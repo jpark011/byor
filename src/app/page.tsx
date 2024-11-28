@@ -1,22 +1,18 @@
-const element = {
-  type: "h1",
-  props: {
-    title: "foo",
-    children: "Hello",
-  },
-};
+import * as React from "@/react";
+console.log("React import is not ignored: ", React);
 
-const container = document.getElementById("root");
+const element = (
+  <div id="foo">
+    <a>bar</a>
+    <b />
+  </div>
+);
 
-if (!container) {
-  throw "No Container!";
-}
+// const container = document.getElementById("root");
+// if (!container) {
+//   throw "No Container!";
+// }
+// ReactDOM.render(element, container)
 
-const node = document.createElement(element.type);
-node["title"] = element.props.title;
-
-const text = document.createTextNode("");
-text["nodeValue"] = element.props.children;
-
-node.appendChild(text);
-container.appendChild(node);
+console.log("Parent: ", element);
+console.log("Children: ", element.props.children);
