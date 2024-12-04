@@ -1,5 +1,4 @@
 import * as React from "@/react";
-console.log("React import is not ignored: ", React);
 
 const element = (
   <div id="foo">
