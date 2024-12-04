@@ -1,4 +1,5 @@
 import * as React from "@/react";
+import * as ReactDOM from "@/react-dom";
 
 const element = (
   <div id="foo">
@@ -7,11 +8,10 @@ const element = (
   </div>
 );
 
-// const container = document.getElementById("root");
-// if (!container) {
-//   throw "No Container!";
-// }
-// ReactDOM.render(element, container)
+const container = document.getElementById("root");
 
-console.log("Parent: ", element);
-console.log("Children: ", element.props.children);
+if (!container) {
+  throw "No Container!";
+}
+
+ReactDOM.render(element, container);
