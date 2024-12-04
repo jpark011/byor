@@ -1,10 +1,15 @@
-type ElementType = React.ElementType | "TEXT_ELEMENT";
+export type ElementType = keyof HTMLElementTagNameMap | "TEXT_ELEMENT";
+export type Element = {
+  type: ElementType;
+  props: WithChildren<Record<string, any>>;
+};
+type WithChildren<T> = T & { children?: Element[] };
 
 export function createElement(
   type: ElementType,
   props?: Record<string, any> | null,
   ...children: any[]
-) {
+): Element {
   return {
     type,
     props: {
