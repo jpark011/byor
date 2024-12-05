@@ -1,5 +1,6 @@
 import * as React from "@/react";
 import type { CSSProperties } from "react";
+import { SVG_TAG_NAMES } from "./const";
 import { render } from "./render";
 import { toKebab } from "./utils";
 
@@ -15,7 +16,7 @@ export function createDOM(fiber: React.Element) {
   const dom =
     fiber.type === "TEXT_ELEMENT"
       ? document.createTextNode(fiber.props.nodeValue)
-      : fiber.type === "svg"
+      : SVG_TAG_NAMES.has(fiber.type)
       ? document.createElementNS("http://www.w3.org/2000/svg", fiber.type)
       : document.createElement(fiber.type);
 
