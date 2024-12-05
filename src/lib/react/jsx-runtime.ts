@@ -1,4 +1,7 @@
-export type ElementType = keyof HTMLElementTagNameMap | "TEXT_ELEMENT";
+export type ElementType =
+  | keyof HTMLElementTagNameMap
+  | keyof SVGElementTagNameMap
+  | "TEXT_ELEMENT";
 export type Element = {
   type: ElementType;
   props: WithChildren<Record<string, any>>;

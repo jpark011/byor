@@ -2,7 +2,7 @@ import * as React from "@/react";
 import { createDOM } from "./dom";
 
 type Fiber = React.Element & {
-  dom: HTMLElement | Text | null;
+  dom: Element | Text | null;
   parent?: Fiber;
   child?: Fiber;
   sibling?: Fiber;
