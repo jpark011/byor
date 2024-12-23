@@ -1,7 +1,6 @@
 import * as React from '@/react'
-import { createDOM } from './dom'
+import { createDOM, updateDom } from './dom'
 import type { Fiber } from './types'
-import { isGone, isNew, isProperty } from './utils'
 import { workState } from './work'
 
 export function performUnitOfWork(fiber: Fiber) {
@@ -90,29 +89,4 @@ function reconcileChildren(fiber: Fiber, children: React.Element[] = []) {
     oldFiber && (oldFiber = oldFiber.sibling)
     index++
   }
-}
-function updateDom(
-  dom: Fiber['dom'],
-  nextProps: React.Element['props'],
-  prevProps: React.Element['props'] = {}
-) {
-  if (!(dom instanceof Element)) {
-    return
-  }
-
-  Object.keys(prevProps)
-    .filter(isProperty)
-    .filter(isGone(prevProps, nextProps))
-    .forEach(name => {
-      // @ts-ignore
-      dom[name] = ''
-    })
-
-  Object.keys(nextProps)
-    .filter(isProperty)
-    .filter(isNew(prevProps, nextProps))
-    .forEach(name => {
-      // @ts-ignore
-      dom[name] = nextProps[name]
-    })
 }

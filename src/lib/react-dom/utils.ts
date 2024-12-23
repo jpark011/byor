@@ -3,7 +3,11 @@ export function toKebab(camelCase: string): string {
 }
 
 export function isProperty(key: string): boolean {
-  return key !== 'children'
+  return key !== 'children' && !isEvent(key)
+}
+
+export function isEvent(key: string): boolean {
+  return key.startsWith('on')
 }
 
 export function isNew(

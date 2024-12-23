@@ -6,6 +6,7 @@ const element = (
     <a href="/" data-hello="world" class="hello-world">
       bar
     </a>
+    <button onclick={() => alert('HELLO')}>Click ME</button>
     <svg
       width={24}
       height={24}

@@ -1,7 +1,8 @@
 import * as React from '@/react'
 import type { CSSProperties } from 'react'
 import { SVG_TAG_NAMES } from './const'
-import { toKebab } from './utils'
+import type { Fiber } from './types'
+import { isEvent, isGone, isNew, isProperty, toKebab } from './utils'
 
 function toStylesAttribute(styles: CSSProperties): string {
   return Object.entries(styles)
@@ -19,20 +20,58 @@ export function createDOM(fiber: React.Element) {
       ? document.createElementNS('http://www.w3.org/2000/svg', fiber.type)
       : document.createElement(fiber.type)
 
-  if (dom instanceof Element) {
-    Object.keys(fiber.props)
-      .filter(key => key !== 'children')
-      .forEach(name => {
-        if (name === 'style' && typeof fiber.props[name] === 'object') {
-          const styleString = toStylesAttribute(fiber.props[name])
-          dom.setAttribute('style', styleString)
-          return
-        }
-        // @ts-ignore
-        dom[name] = fiber.props[name]
-        dom.setAttribute(toKebab(name), fiber.props[name])
-      })
+  updateDom(dom, fiber.props)
+  return dom
+}
+
+export function updateDom(
+  dom: Fiber['dom'],
+  nextProps: React.Element['props'],
+  prevProps: React.Element['props'] = {}
+) {
+  if (!(dom instanceof Element)) {
+    return
   }
 
-  return dom
+  Object.keys(prevProps)
+    .filter(isEvent)
+    .filter(
+      key =>
+        isGone(prevProps, nextProps)(key) || isNew(prevProps, nextProps)(key)
+    )
+    .forEach(key => {
+      const eventType = key.toLowerCase().substring(2)
+      dom.removeEventListener(eventType, prevProps[key])
+    })
+
+  Object.keys(prevProps)
+    .filter(isProperty)
+    .filter(isGone(prevProps, nextProps))
+    .forEach(key => {
+      // @ts-ignore
+      dom[key] = ''
+    })
+
+  Object.keys(nextProps)
+    .filter(isProperty)
+    .filter(isNew(prevProps, nextProps))
+    .forEach(key => {
+      // @ts-ignore
+      if (key === 'style' && typeof nextProps[key] === 'object') {
+        const styleString = toStylesAttribute(nextProps[key])
+        dom.setAttribute('style', styleString)
+        return
+      }
+      // @ts-ignore
+      dom[key] = nextProps[key]
+      dom.setAttribute(toKebab(key), nextProps[key])
+    })
+
+  Object.keys(nextProps)
+    .filter(isEvent)
+    .filter(isNew(prevProps, nextProps))
+    .forEach(key => {
+      const eventType = key.toLowerCase().substring(2)
+      dom.addEventListener(eventType, nextProps[key])
+    })
 }
