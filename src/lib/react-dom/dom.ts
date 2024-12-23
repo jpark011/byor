@@ -1,40 +1,38 @@
-import * as React from "@/react";
-import type { CSSProperties } from "react";
-import { SVG_TAG_NAMES } from "./const";
-import { render } from "./render";
-import { toKebab } from "./utils";
+import * as React from '@/react'
+import type { CSSProperties } from 'react'
+import { SVG_TAG_NAMES } from './const'
+import { toKebab } from './utils'
 
 function toStylesAttribute(styles: CSSProperties): string {
   return Object.entries(styles)
     .map(([key, value]) => {
-      return `${toKebab(key)}: ${value};`;
+      return `${toKebab(key)}: ${value};`
     })
-    .join(" ");
+    .join(' ')
 }
 
 export function createDOM(fiber: React.Element) {
   const dom =
-    fiber.type === "TEXT_ELEMENT"
+    fiber.type === 'TEXT_ELEMENT'
       ? document.createTextNode(fiber.props.nodeValue)
       : SVG_TAG_NAMES.has(fiber.type)
-      ? document.createElementNS("http://www.w3.org/2000/svg", fiber.type)
-      : document.createElement(fiber.type);
+      ? document.createElementNS('http://www.w3.org/2000/svg', fiber.type)
+      : document.createElement(fiber.type)
 
   if (dom instanceof Element) {
     Object.keys(fiber.props)
-      .filter((key) => key !== "children")
-      .forEach((name) => {
-        if (name === "style" && typeof fiber.props[name] === "object") {
-          const styleString = toStylesAttribute(fiber.props[name]);
-          dom.setAttribute("style", styleString);
-          return;
+      .filter(key => key !== 'children')
+      .forEach(name => {
+        if (name === 'style' && typeof fiber.props[name] === 'object') {
+          const styleString = toStylesAttribute(fiber.props[name])
+          dom.setAttribute('style', styleString)
+          return
         }
         // @ts-ignore
-        dom[name] = fiber.props[name];
-        dom.setAttribute(toKebab(name), fiber.props[name]);
-      });
-    fiber.props.children?.forEach((child) => render(child, dom));
+        dom[name] = fiber.props[name]
+        dom.setAttribute(toKebab(name), fiber.props[name])
+      })
   }
 
-  return dom;
+  return dom
 }

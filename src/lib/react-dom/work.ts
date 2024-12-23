@@ -1,26 +1,31 @@
-import { performUnitOfWork } from "./fiber";
-import type { WorkState } from "./types";
+import { commitWork, performUnitOfWork } from './fiber'
+import type { WorkState } from './types'
 
 export const workState: WorkState = {
-  nextUnitOfWork: null,
   wipRoot: null,
-};
+  currentRoot: null,
+  nextUnitOfWork: null,
+  deletions: [],
+}
 
-const workLoop: IdleRequestCallback = (deadline) => {
-  let shouldYield = false;
+const workLoop: IdleRequestCallback = deadline => {
+  let shouldYield = false
   while (workState.nextUnitOfWork && !shouldYield) {
-    workState.nextUnitOfWork = performUnitOfWork(workState.nextUnitOfWork);
-    shouldYield = deadline.timeRemaining() < 1;
+    workState.nextUnitOfWork = performUnitOfWork(workState.nextUnitOfWork)
+    shouldYield = deadline.timeRemaining() < 1
   }
 
   if (!workState.nextUnitOfWork && workState.wipRoot) {
-    commitRoot();
+    commitRoot()
   }
 
-  requestIdleCallback(workLoop);
-};
-requestIdleCallback(workLoop);
+  requestIdleCallback(workLoop)
+}
+requestIdleCallback(workLoop)
 
 function commitRoot() {
-  throw new Error("Function not implemented.");
+  workState.deletions.forEach(commitWork)
+  commitWork(workState.wipRoot?.child || undefined)
+  workState.currentRoot = workState.wipRoot
+  workState.wipRoot = null
 }

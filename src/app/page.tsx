@@ -1,5 +1,5 @@
-import * as React from "@/react";
-import * as ReactDOM from "@/react-dom";
+import * as React from '@/react'
+import * as ReactDOM from '@/react-dom'
 
 const element = (
   <div id="foo">
@@ -66,16 +66,16 @@ const element = (
       </defs>
     </svg>
     <br />
-    <div style={{ color: "red" }} class="apt-apt-apt">
+    <div style={{ color: 'red' }} class="apt-apt-apt">
       i'm a child!
     </div>
   </div>
-) as unknown as React.Element;
+) as unknown as React.Element
 
-const container = document.getElementById("root");
+const container = document.getElementById('root')
 
 if (!container) {
-  throw "No Container!";
+  throw 'No Container!'
 }
 
-ReactDOM.render(element, container);
+ReactDOM.render(element, container)

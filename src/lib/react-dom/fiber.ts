@@ -1,44 +1,118 @@
-import { createDOM } from "./dom";
-import type { Fiber } from "./types";
+import * as React from '@/react'
+import { createDOM } from './dom'
+import type { Fiber } from './types'
+import { isGone, isNew, isProperty } from './utils'
+import { workState } from './work'
 
 export function performUnitOfWork(fiber: Fiber) {
   if (!fiber.dom) {
-    fiber.dom = createDOM(fiber);
+    fiber.dom = createDOM(fiber)
   }
 
-  const { children } = fiber.props;
-  let index = 0;
-  let prevSibling: Fiber;
+  reconcileChildren(fiber, fiber.props.children)
 
-  while (children && index < children.length) {
-    const element = children[index];
-    const newFiber = {
+  if (fiber.child) {
+    return fiber.child
+  }
+
+  let nextFiber: Fiber | undefined = fiber
+  while (nextFiber) {
+    if (nextFiber.sibling) {
+      return nextFiber.sibling
+    }
+    nextFiber = nextFiber.parent
+  }
+
+  return null
+}
+
+export function commitWork(fiber?: Fiber) {
+  if (!fiber) {
+    return
+  }
+
+  const domParent = fiber.parent?.dom
+
+  if (fiber.effectTag === 'PLACEMENT' && fiber.dom) {
+    fiber.dom && domParent?.appendChild(fiber.dom)
+  } else if (fiber.effectTag === 'UPDATE' && fiber.dom) {
+    updateDom(fiber.dom, fiber.props, fiber.alternate?.props)
+  } else if (fiber.effectTag === 'DELETION' && fiber.dom) {
+    domParent?.removeChild(fiber.dom)
+  }
+  commitWork(fiber.child)
+  commitWork(fiber.sibling)
+}
+
+function reconcileChildren(fiber: Fiber, children: React.Element[] = []) {
+  let index = 0
+  let oldFiber = fiber.alternate?.child
+  let prevSibling: Fiber
+
+  while (index < children.length || oldFiber) {
+    const element = children[index]
+    let newFiber: Fiber = {
       type: element.type,
       props: element.props,
       parent: fiber,
       dom: null,
-    };
+    }
+
+    const sameType = oldFiber && element && element.type === oldFiber.type
+
+    if (sameType) {
+      newFiber = {
+        ...oldFiber!,
+        props: element.props,
+        parent: fiber,
+        alternate: oldFiber,
+        effectTag: 'UPDATE',
+      }
+    } else if (element) {
+      newFiber = {
+        ...element!,
+        dom: null,
+        parent: fiber,
+        effectTag: 'PLACEMENT',
+      }
+    } else if (oldFiber) {
+      oldFiber.effectTag = 'DELETION'
+      workState.deletions.push(oldFiber)
+    }
 
     if (index === 0) {
-      fiber.child = newFiber;
+      fiber.child = newFiber
     } else {
-      prevSibling!.sibling = newFiber;
+      prevSibling!.sibling = newFiber
     }
-    prevSibling = newFiber;
-    index++;
+
+    prevSibling = newFiber
+    oldFiber && (oldFiber = oldFiber.sibling)
+    index++
+  }
+}
+function updateDom(
+  dom: Fiber['dom'],
+  nextProps: React.Element['props'],
+  prevProps: React.Element['props'] = {}
+) {
+  if (!(dom instanceof Element)) {
+    return
   }
 
-  if (fiber.child) {
-    return fiber.child;
-  }
+  Object.keys(prevProps)
+    .filter(isProperty)
+    .filter(isGone(prevProps, nextProps))
+    .forEach(name => {
+      // @ts-ignore
+      dom[name] = ''
+    })
 
-  let nextFiber: Fiber | undefined = fiber;
-  while (nextFiber) {
-    if (nextFiber.sibling) {
-      return nextFiber.sibling;
-    }
-    nextFiber = nextFiber.parent;
-  }
-
-  return null;
+  Object.keys(nextProps)
+    .filter(isProperty)
+    .filter(isNew(prevProps, nextProps))
+    .forEach(name => {
+      // @ts-ignore
+      dom[name] = nextProps[name]
+    })
 }
