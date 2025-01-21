@@ -1,29 +1,7 @@
 import * as React from '@/react'
-import { createDOM, updateDom } from './dom'
+import { updateDom } from './dom'
 import type { Fiber } from './types'
 import { workState } from './work'
-
-export function performUnitOfWork(fiber: Fiber) {
-  if (!fiber.dom) {
-    fiber.dom = createDOM(fiber)
-  }
-
-  reconcileChildren(fiber, fiber.props.children)
-
-  if (fiber.child) {
-    return fiber.child
-  }
-
-  let nextFiber: Fiber | undefined = fiber
-  while (nextFiber) {
-    if (nextFiber.sibling) {
-      return nextFiber.sibling
-    }
-    nextFiber = nextFiber.parent
-  }
-
-  return null
-}
 
 export function commitWork(fiber?: Fiber) {
   if (!fiber) {
@@ -43,7 +21,10 @@ export function commitWork(fiber?: Fiber) {
   commitWork(fiber.sibling)
 }
 
-function reconcileChildren(fiber: Fiber, children: React.Element[] = []) {
+export function reconcileChildren(
+  fiber: Fiber,
+  children: React.Element[] = []
+) {
   let index = 0
   let oldFiber = fiber.alternate?.child
   let prevSibling: Fiber
