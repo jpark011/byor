@@ -4,5 +4,5 @@ import { Elysia } from 'elysia'
 
 new Elysia()
   .use(staticPlugin({ assets: 'dist' }))
-  .get('/', () => file('./index.html'))
+  .get('/', () => file('./src/index.html'))
   .listen(3000)
