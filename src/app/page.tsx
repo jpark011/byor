@@ -3,10 +3,10 @@ import * as ReactDOM from '@/react-dom'
 
 const element = (
   <div id="foo">
-    <a href="/" data-hello="world" class="hello-world">
+    <a href="/" data-hello="world" className="hello-world">
       bar
     </a>
-    <button onclick={() => alert('HELLO')}>Click ME</button>
+    <button onClick={() => alert('HELLO')}>Click ME</button>
     <svg
       width={24}
       height={24}
@@ -67,7 +67,7 @@ const element = (
       </defs>
     </svg>
     <br />
-    <div style={{ color: 'red' }} class="apt-apt-apt">
+    <div style={{ color: 'red' }} className="apt-apt-apt">
       i'm a child!
     </div>
   </div>
