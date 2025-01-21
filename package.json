@@ -10,16 +10,14 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1"
+    "@types/react": "^19.0.7",
+    "@types/react-dom": "^19.0.3"
   },
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
   "dependencies": {
     "@elysiajs/static": "^1.1.1",
-    "elysia": "^1.1.26",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "elysia": "^1.1.26"
   }
 }
