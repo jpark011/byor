@@ -2,6 +2,7 @@ export type ElementType =
   | keyof HTMLElementTagNameMap
   | keyof SVGElementTagNameMap
   | 'TEXT_ELEMENT'
+  | Function
 export type Element = {
   type: ElementType
   props: WithChildren<Record<string, any>>
