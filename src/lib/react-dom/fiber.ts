@@ -1,24 +1,22 @@
 import * as React from '@/react'
-import { updateDom } from './dom'
+import { createDOM } from './dom'
 import type { Fiber } from './types'
-import { workState } from './work'
+import { workState } from './work-state'
 
-export function commitWork(fiber?: Fiber) {
-  if (!fiber) {
+export function updateHostComponent(fiber: Fiber) {
+  if (!fiber.dom) {
+    fiber.dom = createDOM(fiber)
+  }
+
+  reconcileChildren(fiber, fiber.props.children)
+}
+
+export function updateFunctionComponent(fiber: Fiber) {
+  if (!(fiber.type instanceof Function)) {
     return
   }
-
-  const domParent = fiber.parent?.dom
-
-  if (fiber.effectTag === 'PLACEMENT' && fiber.dom) {
-    fiber.dom && domParent?.appendChild(fiber.dom)
-  } else if (fiber.effectTag === 'UPDATE' && fiber.dom) {
-    updateDom(fiber.dom, fiber.props, fiber.alternate?.props)
-  } else if (fiber.effectTag === 'DELETION' && fiber.dom) {
-    domParent?.removeChild(fiber.dom)
-  }
-  commitWork(fiber.child)
-  commitWork(fiber.sibling)
+  const children = [fiber.type(fiber.props)]
+  reconcileChildren(fiber, children)
 }
 
 export function reconcileChildren(
