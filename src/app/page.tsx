@@ -1,5 +1,6 @@
 import * as React from '@/react'
 import * as ReactDOM from '@/react-dom'
+import { Hello } from './components/hello'
 
 function App() {
   return (
@@ -71,6 +72,7 @@ function App() {
       <div style={{ color: 'red' }} className="apt-apt-apt">
         i'm a child!
       </div>
+      <Hello />
     </div>
   )
 }
